@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+
+      - name: Build
+        run: make
+
+      - name: Package artifacts
+        run: |
+          mkdir -p dist
+          cp library dist/library-linux-x86_64
+          cp README.md LICENSE CHANGELOG.md dist/
+          tar -czf dist/library-linux-x86_64.tar.gz -C dist library-linux-x86_64 README.md LICENSE CHANGELOG.md
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/library-linux-x86_64
+            dist/library-linux-x86_64.tar.gz

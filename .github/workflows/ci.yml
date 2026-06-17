@@ -1,4 +1,4 @@
-name: C CI
+name: CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["main", "master"]
 
 jobs:
-  build-and-smoke-test:
+  build-and-regression-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,11 +19,14 @@ jobs:
       - name: Build with make
         run: make
 
-      - name: Smoke test run
+      - name: Build with direct gcc command
+        run: gcc -O2 -Wall -Wextra -std=c11 -o library_direct main.c interface.c management.c book_management.c user_management.c globals.c
+
+      - name: Run smoke test
         run: |
           ./library books.txt user.txt loan.txt << 'EOF'
           5
           EOF
 
-      - name: Build with direct gcc command
-        run: gcc -O2 -Wall -Wextra -std=c11 -o library_direct main.c interface.c management.c book_management.c user_management.c
+      - name: Run regression tests
+        run: bash tests/run_regression.sh
