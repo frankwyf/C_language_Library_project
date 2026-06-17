@@ -26,15 +26,15 @@ jobs:
           ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
         run: |
-          ./library_san books.txt user.txt loan.txt 2>&1 | tee sanitizer-smoke.log << 'EOF'
-          5
-          EOF
+          set -o pipefail
+          printf "5\n" | ./library_san books.txt user.txt loan.txt 2>&1 | tee sanitizer-smoke.log
 
       - name: Regression run with sanitizers
         env:
           ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
         run: |
+          set -o pipefail
           cp library_san library
           bash tests/run_regression.sh 2>&1 | tee sanitizer-regression.log
 
