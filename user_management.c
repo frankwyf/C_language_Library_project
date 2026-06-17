@@ -46,8 +46,7 @@ int load_users(FILE *userfile){
 			printf("\nThe user file is empty! Register an account first!\n");
 			return 1;
 		}
-	    int i=strlen(tem);
-		tem[i-1]='\0';//delete the '/n' at the end of the line
+		trim_eol(tem);//delete end-of-line if present
 		int line=1;//show error message if something worng happened
 	    while (pt != NULL){
             Createuser(p);
@@ -110,8 +109,9 @@ int load_users(FILE *userfile){
 			line+=1;//read in the next line
 		    memset(tem, '\0', 1024);
             pt = fgets(tem,sizeof(tem),userfile);//read in the second line
-		    int j=strlen(tem);
-		    tem[j-1]='\0';//delete the '/n' at the end of the line
+			if (pt != NULL){
+				trim_eol(tem);//delete end-of-line if present
+			}
 		}
 		admin->users=last->id;//the length of the booklist
 		fclose(userfile);
@@ -143,8 +143,7 @@ int load_loan(FILE *userfile,User *returnuser){
 		    f=fgets(try,sizeof(try),loan);
 		}
 		//skip this empty line since it doesn't has any meaning
-		int i=strlen(try);
-		try[i-1]='\0';//delete the '/n' at the end of the line
+		trim_eol(try);//delete end-of-line if present
 		returnuser->borrowed->length=0;//set the length to 0 everytime reads in from the fucntion
 		int line=1;//show error message if something worng happened
 		while (f != NULL){//read file till the end (an empty line)
@@ -230,8 +229,9 @@ int load_loan(FILE *userfile,User *returnuser){
 			}
 		    memset(try, '\0', 1024);
             f = fgets(try,sizeof(try),loan);//read in the second line
-		    int j=strlen(try);
-			try[j-1]='\0';//delete the '/n' at the end of the line
+			if (f != NULL){
+				trim_eol(try);//delete end-of-line if present
+			}
 		}
 		fclose(loan);
 		return 0;
