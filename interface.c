@@ -16,30 +16,47 @@
 
 
 char *user_input(const char *input) {
-
 	printf("%s",input);//print the interface choices 1,2,3...
 
-	const int size_step = 2;
-	char *answer = malloc(size_step);// memory allocation for user input
-	answer[0] = 0; //now it's a string of length 0.
+	size_t capacity = 64;
+	size_t len = 0;
+	char *answer = (char *)malloc(capacity);
+	if (answer == NULL) {
+		return NULL;
+	}
 
-	//read until a new line in blocks of size_step  bytes at at time
-	char *next_input = answer;
-	int iteration = 0;
-	do {
-		answer = realloc(answer, size_step + iteration*size_step);
-		next_input = answer + strlen(answer); //answer may have moved.
-		fgets(next_input, size_step, stdin);
-		
-		next_input = answer + strlen(answer); //take the new read into account
-		++iteration;
-	} while (* (next_input-1) != '\n');
+	while (fgets(answer + len, (int)(capacity - len), stdin) != NULL) {
+		len = strlen(answer);
+		if (len > 0 && answer[len - 1] == '\n') {
+			answer[len - 1] = '\0';
+			break;
+		}
 
-	*(next_input-1) = 0; //truncate the string eliminating the new line.
-	int i,j;
-	i=strlen(answer);
-	for (j=0;j<i;j++){
-		if (!isdigit(answer[j])){
+		if (capacity - len <= 1) {
+			size_t new_capacity = capacity * 2;
+			char *tmp = (char *)realloc(answer, new_capacity);
+			if (tmp == NULL) {
+				free(answer);
+				return NULL;
+			}
+			answer = tmp;
+			capacity = new_capacity;
+		}
+	}
+
+	if (len == 0 && feof(stdin)) {
+		free(answer);
+		answer = (char *)malloc(2);
+		if (answer == NULL) {
+			return NULL;
+		}
+		answer[0] = '0';
+		answer[1] = '\0';
+		return answer;
+	}
+
+	for (size_t i = 0; answer[i] != '\0'; i++) {
+		if (!isdigit((unsigned char)answer[i])) {
 			answer[0] = '0';
 			answer[1] = '\0';
 			return answer;
@@ -56,6 +73,10 @@ void run_system(){
 	int choice = 5; //exit
 	    do {
 	        char * answer = user_input("\nPlease choose an option:\n1) Register an account\n2) Login for books \n3) Manager system\n4) Display all books\n5) Quit\nOption: ");
+	        if (answer == NULL) {
+	        	printf("\nInput error. Exiting...\n");
+	        	exit(1);
+	        }
 	        choice = atoi(answer);
 	        free(answer);
 		    switch (choice) {
