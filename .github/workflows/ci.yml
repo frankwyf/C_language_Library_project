@@ -62,18 +62,18 @@ jobs:
             mingw-w64-x86_64-make
 
       - name: Build (Windows MinGW)
-        shell: msys2 {0}
+        shell: pwsh
         run: |
-          cd "$(cygpath "$GITHUB_WORKSPACE")"
+          Set-Location $env:GITHUB_WORKSPACE
+          $env:Path = "C:\\msys64\\mingw64\\bin;" + $env:Path
           mingw32-make clean
           mingw32-make
 
-      - name: Run regression (MSYS2 bash)
-        shell: msys2 {0}
+      - name: Run regression (PowerShell)
+        shell: pwsh
         run: |
-          cd "$(cygpath "$GITHUB_WORKSPACE")"
-          set -o pipefail
-          bash tests/run_regression.sh 2>&1 | tee regression-windows.log
+          Set-Location $env:GITHUB_WORKSPACE
+          & .\tests\run_regression.ps1 2>&1 | Tee-Object -FilePath regression-windows.log
 
       - name: Upload Windows regression log
         if: always()
