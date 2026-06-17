@@ -10,3 +10,8 @@
 
 - Legacy migration summary: [project-legacy-notes.md](project-legacy-notes.md)
 - Windows setup: [setup-windows.md](setup-windows.md)
+
+## Testing
+
+- Linux/macOS regression script: [../tests/run_regression.sh](../tests/run_regression.sh)
+- Windows PowerShell regression script: [../tests/run_regression.ps1](../tests/run_regression.ps1)

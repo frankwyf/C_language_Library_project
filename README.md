@@ -62,6 +62,40 @@ gcc -O2 -Wall -Wextra -std=c11 -o library main.c interface.c management.c book_m
 Windows setup and VS Code terminal troubleshooting:
 [docs/setup-windows.md](docs/setup-windows.md)
 
+## Automated Tests
+
+Local regression test scripts:
+
+- Linux/macOS: [tests/run_regression.sh](tests/run_regression.sh)
+- Windows PowerShell: [tests/run_regression.ps1](tests/run_regression.ps1)
+
+Typical usage:
+
+```bash
+make
+bash tests/run_regression.sh
+```
+
+PowerShell:
+
+```powershell
+mingw32-make
+powershell -ExecutionPolicy Bypass -File tests\run_regression.ps1
+```
+
+## CI/CD
+
+- CI workflow: [.github/workflows/ci.yml](.github/workflows/ci.yml)
+	- build with make
+	- direct gcc build
+	- smoke test
+	- regression test script
+
+- Release workflow: [.github/workflows/release.yml](.github/workflows/release.yml)
+	- triggers on tags like `v1.0.0`
+	- builds linux binary
+	- uploads release artifacts
+
 ## Run
 
 ```bash
