@@ -41,8 +41,9 @@ run_case "login_failure_then_quit" "2\nno_user\nbad_pass\n5\n" "invalid"
 run_case "librarian_login_then_quit" "2\nadmin\nadmin123\n5\n5\n" "Successfully logged in as Librarian"
 run_case "register_then_login" "1\nCaseUser\nregcase\nregpass\n2\nregcase\nregpass\n5\n5\n" "registered successfully"
 
-# Data consistency case: borrow a book then return it and verify loan data rollback.
-cp loan.txt "$TMP_DIR/loan_before.txt"
+# Data consistency case: borrow a book then return it and verify data rollback.
+cp "$TMP_DIR/loan.txt" "$TMP_DIR/loan_before.txt"
+cp "$TMP_DIR/books.txt" "$TMP_DIR/books_before_borrow_return.txt"
 output_borrow_return="$(printf "%b" "2\nalice\nalice123\n1\n1\n2\n1\n5\n5\n" | ./library "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
 
 if ! grep -Fq "successfuly borrowed" <<<"$output_borrow_return"; then
@@ -68,6 +69,16 @@ if ! cmp -s "$TMP_DIR/loan_before.txt" "$TMP_DIR/loan.txt"; then
   cat "$TMP_DIR/loan_before.txt"
   echo "--- After ---"
   cat "$TMP_DIR/loan.txt"
+  exit 1
+fi
+
+if ! cmp -s "$TMP_DIR/books_before_borrow_return.txt" "$TMP_DIR/books.txt"; then
+  echo "[FAIL] borrow_and_return_flow"
+  echo "Books file was not restored after borrow+return cycle"
+  echo "--- Before ---"
+  cat "$TMP_DIR/books_before_borrow_return.txt"
+  echo "--- After ---"
+  cat "$TMP_DIR/books.txt"
   exit 1
 fi
 
