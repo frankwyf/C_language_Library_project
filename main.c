@@ -1,4 +1,4 @@
-#include"interface.h"
+#include "interface.h"
 
 
 #include <stdio.h>
@@ -16,9 +16,9 @@ int main(int argc, char **argv){
         i=strlen(argv[1]);
         j=strlen(argv[2]);
         k=strlen(argv[3]);
-        bookfile=(char *)malloc(sizeof(char)*i);
-        Userfile=(char *)malloc(sizeof(char)*j);
-        loanfile=(char *)malloc(sizeof(char)*k);
+        bookfile=(char *)malloc(sizeof(char)*(i+1));
+        Userfile=(char *)malloc(sizeof(char)*(j+1));
+        loanfile=(char *)malloc(sizeof(char)*(k+1));
         strcpy(bookfile,argv[1]);
         strcpy(Userfile,argv[2]);
         strcpy(loanfile,argv[3]);
