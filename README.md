@@ -59,6 +59,9 @@ If `make` is not available, compile directly:
 gcc -O2 -Wall -Wextra -std=c11 -o library main.c interface.c management.c book_management.c user_management.c
 ```
 
+Windows setup and VS Code terminal troubleshooting:
+[docs/setup-windows.md](docs/setup-windows.md)
+
 ## Run
 
 ```bash
