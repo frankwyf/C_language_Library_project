@@ -44,3 +44,38 @@ jobs:
         with:
           name: regression-log-${{ matrix.compiler }}
           path: regression.log
+
+  windows-regression:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2 MinGW
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: MINGW64
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-make
+
+      - name: Build (Windows MinGW)
+        shell: pwsh
+        run: |
+          $env:Path = "C:\\msys64\\mingw64\\bin;" + $env:Path
+          mingw32-make clean
+          mingw32-make
+
+      - name: Run regression (PowerShell)
+        shell: pwsh
+        run: |
+          $env:Path = "C:\\msys64\\mingw64\\bin;" + $env:Path
+          powershell -ExecutionPolicy Bypass -File tests\run_regression.ps1 | Tee-Object -FilePath regression-windows.log
+
+      - name: Upload Windows regression log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-log-windows
+          path: regression-windows.log
