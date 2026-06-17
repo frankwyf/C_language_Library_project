@@ -96,6 +96,10 @@ powershell -ExecutionPolicy Bypass -File tests\run_regression.ps1
 	- builds linux binary
 	- uploads release artifacts
 
+- Sanitizer workflow: [.github/workflows/sanitizers.yml](.github/workflows/sanitizers.yml)
+	- AddressSanitizer + UndefinedBehaviorSanitizer build
+	- smoke + regression execution under sanitizers
+
 ## Run
 
 ```bash
