@@ -76,21 +76,21 @@ int load_users(FILE *userfile){
 					    p->name=data;
                         int i;
 						i=strlen(p->name);
-						p->name=(char *)malloc(i*sizeof(char));
+						p->name=(char *)malloc((size_t)i + 1);
 						strcpy(p->name,data);
 					    break;
 					case 2:
 					    p->username=data;
                         int k;
 						k=strlen(p->username);
-						p->username=(char *)malloc(i*sizeof(char));
+						p->username=(char *)malloc((size_t)k + 1);
 						strcpy(p->username,data);
 					    break;
 					case 3:
 					    p->password=data;
 						int j;
 						j=strlen(p->password);
-						p->password=(char *)malloc(i*sizeof(char));
+						p->password=(char *)malloc((size_t)j + 1);
 						strcpy(p->password,data);
 					    break;
 				}
@@ -113,6 +113,7 @@ int load_users(FILE *userfile){
 }
 //function to load the loan file
 int load_loan(FILE *userfile,User *returnuser){
+	(void)userfile;
 	loan=fopen(loanfile,"r");
 	if (loan==NULL){
 		printf("Loan file cannot open!\n");
@@ -132,7 +133,7 @@ int load_loan(FILE *userfile,User *returnuser){
 		//open a file in "a" prints a '\n' at first line
 		if (f[0]=='\n'){
 			memset(try, '\0', 1024);
-		    char *f=fgets(try,sizeof(try),loan);
+		    f=fgets(try,sizeof(try),loan);
 		}
 		//skip this empty line since it doesn't has any meaning
 		int i=strlen(try);
@@ -144,7 +145,7 @@ int load_loan(FILE *userfile,User *returnuser){
 			char *t=strtok(try,",");//cut the input string by comma
 
 			//only get the loan of the user who is currently logged in
-			int Check_user=atoi(t);
+			unsigned int Check_user=(unsigned int)atoi(t);
 			if (Check_user==returnuser->id){
 				returnuser->id=Check_user;//copying the user id to show data structure
 				t=strtok(NULL,",");//read in real data
@@ -168,7 +169,7 @@ int load_loan(FILE *userfile,User *returnuser){
 					        p->title=t;
 						    int i;
 						    i=strlen(p->title);
-						    p->title=(char *)malloc(i*sizeof(char));
+							    p->title=(char *)malloc((size_t)i + 1);
 						    strcpy(p->title,t);
 					        break;
 					    case 2:
@@ -186,7 +187,7 @@ int load_loan(FILE *userfile,User *returnuser){
 					        p->authors=t;
 						    int j;
 						    j=strlen(p->authors);
-						    p->authors=(char *)malloc(i*sizeof(char));
+						    p->authors=(char *)malloc((size_t)j + 1);
 						    strcpy(p->authors,t);
 					        break;
 					    case 3:
@@ -247,7 +248,7 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 		}
 		else{continue;}
 	}
-	int borrow_id=(int)atoi(str);//read in the ID for borrow operations 
+	unsigned int borrow_id=(unsigned int)atoi(str);//read in the ID for borrow operations 
 
 	if (borrow_id>lpointer->length || borrow_id<1){
 		printf("\nID out of range! Please re-enter.\n");
@@ -258,7 +259,7 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 		load_loan(userfile,borrowuser);
 		Book *repeat;
 		repeat=borrowuser->borrowed->list;
-		int step=0;
+		unsigned int step=0;
 		while (step<=borrowuser->borrowed->length){
 			if (repeat->id==borrow_id){
 				printf("\nSorry! It seems that you have borrowed a copy of : %i,%s !\n",repeat->id,repeat->title);
@@ -270,7 +271,7 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 				step+=1;
 			}
 		}
-	    int loop=0;//for loop around the whole list
+	    unsigned int loop=0;//for loop around the whole list
 		Book *p,*end;
 		end=lpointer->list;
 	    while (loop<lpointer->length){
@@ -302,6 +303,8 @@ int borrow_book(User *borrowuser,FILE *loan){//borrow a book is user sensitive
 		    }
 	    }
 	}
+	fclose(loan);
+	return 1;
 }
 
 int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
@@ -339,7 +342,7 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 		    }
 		    else{continue;}
 	    }
-	    int return_id=(int)atoi(str);//read in the ID for borrow operations
+	    unsigned int return_id=(unsigned int)atoi(str);//read in the ID for borrow operations
 
         //make sure the id is in range
 		if (return_id>lpointer->length || return_id<1){
@@ -395,6 +398,7 @@ int return_book(User *returnuser,FILE *loan){//borrow a book is user sensitive
 				returnp=returnp->next;
 			}
 		}
+		return 1;
 }
 
 //function for librarian to add a book to the book list
@@ -500,7 +504,7 @@ int add_book(Book book){
 	//test if there is a repeated book in the library
 	Book *redundant;
 	redundant=lpointer->list->next;
-	int length=0;
+	unsigned int length=0;
 	while (length<lpointer->length){
 		if (strcmp(redundant->authors,add->authors)==0 && strcmp(redundant->title,add->title)==0 && redundant->year==add->year){
 			printf("\nThe book is already in the library!\nAdding copies to the exsisting book in library...\n");
@@ -543,7 +547,7 @@ int remove_book(Book book){
 		}
 		else{continue;}
 	}
-	int removeid=atoi(remove_id);
+	unsigned int removeid=(unsigned int)atoi(remove_id);
 	//check th id is in range or not
 	if (removeid>lpointer->length || removeid<1){
 		printf("\nID out of range! Please re-enter.\n");
@@ -564,7 +568,7 @@ int remove_book(Book book){
 			printf("\nBook(ID): %i has been removed successfuly.\n",book.id);
 			lpointer->length=lpointer->length-1;//reduce the length of the booklist by 1
 			free(remove_id);//free the char * used to read in the book id
-			int track;//to track whetehr all the booklist has been modified correctly
+			unsigned int track;//to track whetehr all the booklist has been modified correctly
 			track=p1->id;
 			while (track<lpointer->length){
 				p->id=p->id-1;//to move forward the book id after the deleted node by 1
@@ -574,6 +578,7 @@ int remove_book(Book book){
 			return 0;
 		}
 	}
+	return 1;
 }
 
 //fucntion for user register

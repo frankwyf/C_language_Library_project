@@ -80,7 +80,7 @@ int load_books(FILE *file){
 					    p->title=ptr;
 						int i;
 						i=strlen(p->title);
-						p->title=(char *)malloc(i*sizeof(char));
+						p->title=(char *)malloc((size_t)i + 1);
 						strcpy(p->title,ptr);
 					    break;
 					case 2:
@@ -98,7 +98,7 @@ int load_books(FILE *file){
 					    p->authors=ptr;
 						int j;
 						j=strlen(p->authors);
-						p->authors=(char *)malloc(i*sizeof(char));
+						p->authors=(char *)malloc((size_t)j + 1);
 						strcpy(p->authors,ptr);
 					    break;
 					case 3:
@@ -133,8 +133,10 @@ int load_books(FILE *file){
 			line+=1;//read in the next line
 		    memset(temp, '\0', 1024);
             frtn = fgets(temp,sizeof(temp),file);//read in the second line
-		    int j=strlen(temp);
-			temp[j-1]='\0';//delete the '/n' at the end of the line
+		    if (frtn != NULL) {
+		    	int j=strlen(temp);
+		    	temp[j-1]='\0';//delete the '/n' at the end of the line
+		    }
 		}
 		lpointer->length=last->id;//the length of the booklist
 		fclose(file);
@@ -142,6 +144,7 @@ int load_books(FILE *file){
 	}	
 }
 BookList find_book_by_title (const char *title){
+	(void)title;
 	BookList *find_book_by_title;
 	Booklist(find_book_by_title);
 	CreateNode(find_book_by_title->list);
@@ -151,11 +154,10 @@ BookList find_book_by_title (const char *title){
 	fgets(str,200,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
-	title=str;
     find_book_by_title->list=lpointer->list->next;
 	printf("\n");
     print_title();
-	int try=0;//for loop around the whole list
+	unsigned int try=0;//for loop around the whole list
 	int flag=0;//to decide whether there's an out put or not
 	while (try<lpointer->length){
         while (find_book_by_title->list!=NULL){
@@ -182,6 +184,7 @@ BookList find_book_by_title (const char *title){
 }
 
 BookList find_book_by_author (const char *author){
+	(void)author;
 	BookList *find_book_by_author;
 	Booklist(find_book_by_author);
 	printf("\nPlease enter the author(only characters): ");
@@ -189,7 +192,6 @@ BookList find_book_by_author (const char *author){
 	fgets(str,100,stdin);
 	int i=strlen(str);
 	str[i-1]='\0';//get rid of the '\n' at the last of the input
-	author=str;//give in the attributes
 	int j;
 	for (j=0;j<i-1;j++){
 		if (isspace(str[j])){
@@ -207,7 +209,7 @@ BookList find_book_by_author (const char *author){
 	find_book_by_author->list=lpointer->list->next;
 	printf("\n");
 	print_title();
-	int try=0;//for loop around the whole list
+	unsigned int try=0;//for loop around the whole list
 	int flag=0;//to decide whether there's an out put or not
 	while (try<lpointer->length){
 	    while (find_book_by_author->list!=NULL){
@@ -261,7 +263,7 @@ BookList find_book_by_year (unsigned int year){
     struct tm * lt;
     time (&t);//get Unix time
     lt = localtime (&t);//trun into time struct
-    int thisyear=lt->tm_year+1900;
+	unsigned int thisyear=(unsigned int)(lt->tm_year+1900);
 	if (year>thisyear){
 		printf("\nThis year is %i! No futher year is possible!\n",thisyear);
 		find_book_by_year->list=NULL;
@@ -272,7 +274,7 @@ BookList find_book_by_year (unsigned int year){
 	find_book_by_year->list=lpointer->list->next;
 	print_title();
 	int flag=0;//to decide whether there's an out put or not
-	int try=0;//for loop around the whole list
+	unsigned int try=0;//for loop around the whole list
 	while (try<lpointer->length){
 		while (find_book_by_year->list!=NULL){
 		    if (find_book_by_year->list->year==year){
@@ -300,6 +302,7 @@ BookList find_book_by_year (unsigned int year){
 
 
 int search_for_books(BookList *lpointer){
+	(void)lpointer;
 	printf("\nLoading Search Menu...\n");
 	   int in = 5; //exit
 	        do {
@@ -337,7 +340,7 @@ int store_books(FILE *file){
 	    final=lpointer->list;
 	    CreateNode(store);
 	    store=final->next;
-	    int list_long=0;
+	    unsigned int list_long=0;
 	    while (list_long<lpointer->length){
 		    fprintf(file,"%i,%s,%s,%i,%i\n",store->id,store->title,store->authors,store->year,store->copies);
 		    final=store;

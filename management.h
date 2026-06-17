@@ -18,7 +18,7 @@ typedef struct _Loanlist {
     unsigned int total;//the legth of loanlist
 }Loanlist;
 
-Loanlist *all;//the linked list use to load all users' borrowed books
+extern Loanlist *all;//the linked list use to load all users' borrowed books
 
 int load_all_loans(FILE *loan);/* the function to load all the loans into a linked list
 can be used in return book (updating the loan file), loan management (for the librarian) */

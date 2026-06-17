@@ -63,6 +63,7 @@ int load_all_loans(FILE *loan){
 		                    else{continue;}
 	                    }
                         p->user=atoi(ptr);
+					    break;
 					case 1:
 					    len=strlen(ptr);
 	                    for (index=0;index<len;index++){
@@ -78,7 +79,7 @@ int load_all_loans(FILE *loan){
 					    p->title=ptr;
 						int i;
 						i=strlen(p->title);
-						p->title=(char *)malloc(i*sizeof(char));
+						p->title=(char *)malloc((size_t)i + 1);
 						strcpy(p->title,ptr);
 					    break;
 					case 3:
@@ -96,7 +97,7 @@ int load_all_loans(FILE *loan){
 					    p->authors=ptr;
 						int j;
 						j=strlen(p->authors);
-						p->authors=(char *)malloc(i*sizeof(char));
+						p->authors=(char *)malloc((size_t)j + 1);
 						strcpy(p->authors,ptr);
 					    break;
 					case 4:
@@ -132,8 +133,10 @@ int load_all_loans(FILE *loan){
 			line+=1;
 		    memset(temp, '\0', 1024);
             frtn = fgets(temp,sizeof(temp),loan);//read in the second line
-		    int j=strlen(temp);
-			temp[j-1]='\0';//delete the '/n' at the end of the line
+		    if (frtn != NULL) {
+		    	int j=strlen(temp);
+		    	temp[j-1]='\0';//delete the '/n' at the end of the line
+		    }
 		}
 		fclose(loan);
 		return 0;
@@ -153,7 +156,7 @@ int store_loans(FILE *loan){
 	    final=all->loanlist;
 	    Createloan(store);
 	    store=final->next;
-	    int list_long=0;
+	    unsigned int list_long=0;
 	    while (list_long<all->total){
 		    fprintf(loan,"%i,%i,%s,%s,%i,%i\n",store->user,store->bookid,store->title,store->authors,store->year,store->copies);
 		    final=store;
@@ -221,7 +224,7 @@ int store_users(FILE *loan){
 	    final=admin->UserList;
 	    Createuser(store);
 	    store=final->next;
-	    int user_long=0;
+	    unsigned int user_long=0;
 	    while (user_long<admin->users){
 		    fprintf(loan,"%i,%s,%s,%s\n",store->id,store->name,store->username,store->password);
 		    final=store;
@@ -248,7 +251,7 @@ int remove_users(){
 		}
 		else{continue;}
 	}
-	int user=atoi(remove_user);
+	unsigned int user=(unsigned int)atoi(remove_user);
 	if (user>admin->users || user<2){//can't remove the librarian
 		printf("\nID out of range! Please re-enter.\n");
 		return 1;
@@ -271,6 +274,8 @@ int remove_users(){
 			return 0;
 		}
 	}
+	printf("\nUser not found.\n");
+	return 1;
 }
 
 //function to remove a loan record,can be used when user return book is mulfunctioning
@@ -289,7 +294,7 @@ int remove_loans(){
 		    }
 		    else{continue;}
 	    }
-		int ruserid=atoi(remove_loan);
+		unsigned int ruserid=(unsigned int)atoi(remove_loan);
 		if (ruserid>admin->users || ruserid<2){//librarian can't borrow a book
 		    printf("\nUser ID out of range! Please re-enter.\n");
 		    return 1;
@@ -308,7 +313,7 @@ int remove_loans(){
 		    }
 		    else{continue;}
 	    }
-		int rbookid=atoi(remove_id);
+		unsigned int rbookid=(unsigned int)atoi(remove_id);
 		if (rbookid>lpointer->length || rbookid<2){//librarian can't borrow a book
 		    printf("\nBook ID out of range! Please re-enter.\n");
 		    return 1;
@@ -322,7 +327,6 @@ int remove_loans(){
 		    if (ruserid==remove->user && rbookid==remove->bookid){
 			    ending->next=remove->next;
 			    free(remove);
-			    remove=ending->next;
 			    printf("\nLoan reocrd user(ID): %i  book(ID):%i has been removed.\n",ruserid,rbookid);
 			    free(remove_id);
 				free(remove_loan);
@@ -332,9 +336,13 @@ int remove_loans(){
 			    return 0;
 		    }
 	    }
+		printf("\nLoan record not found.\n");
+		free(remove_id);
+		free(remove_loan);
+		return 1;
 	}
 	else{
-		printf("Failed to laod loan infromation.\n");\
+		printf("Failed to laod loan infromation.\n");
 		return 1;
 	}
 }
@@ -393,7 +401,13 @@ int backend_management(FILE *userfile){
 		}
         else{
 		    printf("\nInvalid librarian!\n");
+			free(username);
+			free(password);
 				return 1;
 	    }
+		free(username);
+		free(password);
+		return 0;
 	}
+	return 1;
 }

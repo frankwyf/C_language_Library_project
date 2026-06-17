@@ -25,8 +25,8 @@ typedef struct _Librarian{//data stucture of registed users
 int user_regist(FILE *userfile);//the function for users to register
 //returns 0 if success, else return 1
 
-FILE *userfile;//file pointer for the user(librarian file)
-Librarian *admin;//craet the librarian account
+extern FILE *userfile;//file pointer for the user(librarian file)
+extern Librarian *admin;//craet the librarian account
 
 int set_librarian(User *admin,FILE *userfile);//set the librarian account
 int load_users(FILE *userfile);//load the fixed user file
@@ -39,7 +39,7 @@ int borrow_book(User *borrowuser,FILE *loan);//funtion for users to borrow a boo
 int return_book(User *returnuser,FILE *loan);//funtion for users to return a book
 //returns 0 if the borrow is successful, 1 otherwias
 
-FILE *loan;//the file used to record user loans
-User *LoginCheck;//the user data when a user is logged in
-Book book;//the struct used to store data when add/remove book
+extern FILE *loan;//the file used to record user loans
+extern User *LoginCheck;//the user data when a user is logged in
+extern Book book;//the struct used to store data when add/remove book
 #endif
