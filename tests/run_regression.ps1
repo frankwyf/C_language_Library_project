@@ -43,6 +43,7 @@ try {
     Run-Case -Name 'invalid_option_then_quit' -InputText "x`n5`n" -ExpectedText 'invalid'
     Run-Case -Name 'login_failure_then_quit' -InputText "2`nno_user`nbad_pass`n5`n" -ExpectedText 'invalid'
     Run-Case -Name 'librarian_login_then_quit' -InputText "2`nadmin`nadmin123`n5`n5`n" -ExpectedText 'Successfully logged in as Librarian'
+    Run-Case -Name 'register_then_login' -InputText "1`nCaseUser`nregcase`nregpass`n2`nregcase`nregpass`n5`n5`n" -ExpectedText 'registered successfully'
 
     Copy-Item (Join-Path $tmpDir 'loan.txt') (Join-Path $tmpDir 'loan_before.txt') -Force
     $exe = if (Test-Path .\library.exe) { '.\library.exe' } else { '.\library' }
@@ -78,6 +79,39 @@ try {
     }
 
     Write-Host '[PASS] borrow_and_return_flow'
+
+    Copy-Item (Join-Path $tmpDir 'books.txt') (Join-Path $tmpDir 'books_before.txt') -Force
+    $adminAddRemoveOutput = "2`nadmin`nadmin123`n1`nRegression Title`nRegression Author`n2020`n1`n2`n14`n5`n5`n" | & $exe @args 2>&1 | Out-String
+
+    if ($adminAddRemoveOutput -notmatch 'successfuly added') {
+        Write-Host '[FAIL] admin_add_remove_flow'
+        Write-Host 'Expected add success message'
+        Write-Host '--- Output ---'
+        Write-Host $adminAddRemoveOutput
+        exit 1
+    }
+
+    if ($adminAddRemoveOutput -notmatch 'removed successfuly') {
+        Write-Host '[FAIL] admin_add_remove_flow'
+        Write-Host 'Expected remove success message'
+        Write-Host '--- Output ---'
+        Write-Host $adminAddRemoveOutput
+        exit 1
+    }
+
+    $beforeBooks = Get-Content (Join-Path $tmpDir 'books_before.txt') -Raw
+    $afterBooks = Get-Content (Join-Path $tmpDir 'books.txt') -Raw
+    if ($beforeBooks -ne $afterBooks) {
+        Write-Host '[FAIL] admin_add_remove_flow'
+        Write-Host 'Books file was not restored after add+remove cycle'
+        Write-Host '--- Before ---'
+        Write-Host $beforeBooks
+        Write-Host '--- After ---'
+        Write-Host $afterBooks
+        exit 1
+    }
+
+    Write-Host '[PASS] admin_add_remove_flow'
 
     Write-Host 'All regression tests passed.'
 }

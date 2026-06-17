@@ -39,6 +39,7 @@ run_case "show_books_then_quit" "4\n5\n" "Programming in C"
 run_case "invalid_option_then_quit" "x\n5\n" "invalid"
 run_case "login_failure_then_quit" "2\nno_user\nbad_pass\n5\n" "invalid"
 run_case "librarian_login_then_quit" "2\nadmin\nadmin123\n5\n5\n" "Successfully logged in as Librarian"
+run_case "register_then_login" "1\nCaseUser\nregcase\nregpass\n2\nregcase\nregpass\n5\n5\n" "registered successfully"
 
 # Data consistency case: borrow a book then return it and verify loan data rollback.
 cp loan.txt "$TMP_DIR/loan_before.txt"
@@ -71,5 +72,37 @@ if ! cmp -s "$TMP_DIR/loan_before.txt" "$TMP_DIR/loan.txt"; then
 fi
 
 echo "[PASS] borrow_and_return_flow"
+
+# Data consistency case: librarian add then remove should restore books file.
+cp "$TMP_DIR/books.txt" "$TMP_DIR/books_before.txt"
+output_admin_add_remove="$(printf "%b" "2\nadmin\nadmin123\n1\nRegression Title\nRegression Author\n2020\n1\n2\n14\n5\n5\n" | ./library "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
+
+if ! grep -Fq "successfuly added" <<<"$output_admin_add_remove"; then
+  echo "[FAIL] admin_add_remove_flow"
+  echo "Expected add success message"
+  echo "--- Output ---"
+  echo "$output_admin_add_remove"
+  exit 1
+fi
+
+if ! grep -Fq "removed successfuly" <<<"$output_admin_add_remove"; then
+  echo "[FAIL] admin_add_remove_flow"
+  echo "Expected remove success message"
+  echo "--- Output ---"
+  echo "$output_admin_add_remove"
+  exit 1
+fi
+
+if ! cmp -s "$TMP_DIR/books_before.txt" "$TMP_DIR/books.txt"; then
+  echo "[FAIL] admin_add_remove_flow"
+  echo "Books file was not restored after add+remove cycle"
+  echo "--- Before ---"
+  cat "$TMP_DIR/books_before.txt"
+  echo "--- After ---"
+  cat "$TMP_DIR/books.txt"
+  exit 1
+fi
+
+echo "[PASS] admin_add_remove_flow"
 
 echo "All regression tests passed."
