@@ -90,11 +90,13 @@ powershell -ExecutionPolicy Bypass -File tests\run_regression.ps1
 	- direct gcc build
 	- smoke test
 	- regression test script (menu, login, librarian path, borrow/return persistence)
+	- windows MinGW build + PowerShell regression
 
 - Release workflow: [.github/workflows/release.yml](.github/workflows/release.yml)
 	- triggers on tags like `v1.0.0`
-	- builds linux binary
-	- uploads release artifacts
+	- builds linux and windows binaries
+	- runs regression before publishing
+	- uploads release artifacts (`.tar.gz` and `.zip` packages)
 
 - Sanitizer workflow: [.github/workflows/sanitizers.yml](.github/workflows/sanitizers.yml)
 	- AddressSanitizer + UndefinedBehaviorSanitizer build
