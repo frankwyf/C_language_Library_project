@@ -9,6 +9,13 @@
 #include <ctype.h>
 #include <time.h>
 
+static void trim_eol(char *s) {
+	if (s == NULL) {
+		return;
+	}
+	s[strcspn(s, "\r\n")] = '\0';
+}
+
 
 #define CreateNode(p) p=(Book *)malloc(sizeof(Book));
 #define Booklist(p) p=(BookList *)malloc(sizeof(BookList));
@@ -588,8 +595,8 @@ int user_regist(FILE *userfile){
         printf("Please enter your name(less than 50 words,only space and characters are allowed):");
 	    char *name=(char *)malloc(sizeof(char)*50);//the maxium length of a name maybe is 50 letters
 	    fgets(name,50,stdin);
+	    trim_eol(name);
 	    int i=strlen(name);
-	    name[i-1]='\0';//get rid of the '\n' at the last of the input
 	    int j;
 	    for (j=0;j<i;j++){
 		    if (isspace(name[j])){
@@ -606,15 +613,13 @@ int user_regist(FILE *userfile){
 	    printf("Please enter your username(less than 100 characters): ");
 	    char *username=(char *)malloc(sizeof(char)*100);//the maxium length of a username maybe is 100 characters
 	    fgets(username,100,stdin);
-	    int m=strlen(username);
-	    username[m-1]='\0';//get rid of the '\n' at the last of the input
+	    trim_eol(username);
 	
 	    //get password
 	    printf("Please enter your password(no more than 10 letters or 10 intergers): ");
 	    char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a username maybe is 100 characters
 	    fgets(password,50,stdin);
-	    int k=strlen(password);
-	    password[k-1]='\0';//get rid of the '\n' at the last of the input
+	    trim_eol(password);
 
 	    int newid=admin->users+1;//set the new user ID
 
@@ -662,13 +667,11 @@ void login(FILE *userfile){
         printf("Please enter username(less than 100 characters): ");
         char *username=(char *)malloc(sizeof(char)*100);//the maxium length of a username maybe 50 characters
 	    fgets(username,100,stdin);
-	    int i=strlen(username);
-	    username[i-1]='\0';//get rid of the '\n' at the last of the input
+	    trim_eol(username);
         printf("Please enter password(no more than 10 letters or 10 intergers): ");
         char *password=(char *)malloc(sizeof(char)*10+sizeof(int)*10);//the maxium length of a password maybe 30 characters
 	    fgets(password,50,stdin);
-	    int j=strlen(password);
-	    password[j-1]='\0';//get rid of the '\n' at the last of the input
+	    trim_eol(password);
 
         //check whether the user is a normal user or librarian
 
