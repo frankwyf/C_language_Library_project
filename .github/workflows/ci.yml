@@ -36,4 +36,11 @@ jobs:
           EOF
 
       - name: Run regression tests
-        run: bash tests/run_regression.sh
+        run: bash tests/run_regression.sh | tee regression.log
+
+      - name: Upload regression log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-log-${{ matrix.compiler }}
+          path: regression.log
