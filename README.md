@@ -1,43 +1,97 @@
-# Readme file for programming project coursewok 1
+# C Library Management System (Portfolio Edition)
 
-## This is the README file of XJCO1921 programming-project coursework 1, the systme provided user register, user (librarian) login, print all books and a backend management system(addtional)
-*[Functions and inplemeantations](#General-interpretation)
-*[Tests and file explaination](#Tests-and-submission-files)
-*[Reflection](#Reflection-and-review)
+[![C CI](https://github.com/frankwyf/programming-project/actions/workflows/ci.yml/badge.svg)](https://github.com/frankwyf/programming-project/actions/workflows/ci.yml)
 
-### General-interpretation
-The entrance is pleaced in a file called "main.c", in the main function the system takes in command line arguments and these three arguments are corresponding to book file, user file and loan file.
+This repository is a refactored and open-source-ready version of an earlier C programming coursework project.
+It is now maintained as a personal portfolio project focused on:
 
-In the main interface, there are five functions. 
-Option 1 corresponds to user register, in which a user will have to provide a name, a username and a password to register in the system. Their information are stored in the user file and pointers are used to get user inupt.
+- C language fundamentals
+- linked list based data modeling
+- file-based persistence
+- cross-platform command-line workflow
 
-Option 2 corresponds to login. The system has a special user (ID as 1) called "deafult", the username is "Admin" and password is "Admin123". This is the librarian account. Login as the librarian allows you to add, remove, serach or print all the books. Following the librarian are all the registered users and login as a user allows you to borrow, return, search or print all the books. All the functions above is provided in a sub-interface when the check of username and password is passed.
-When log in and system starts, the current time is displayed on the screen.
+## Languages
 
-*Option 3 is an additioanl feature which is not within the requirement of coursework 1. I designed it as a enmergency solution to some unexpeted situations. The backend system ONLY allows the librarian to login and it provides the librarian (manager) with functions of showing all registered users; remove a user as he/she's information or membership is expired; display all the loan information and remove a loan record when a user lost a copy of books or something worog happend when the book is returned.
+- English (this file)
+- Chinese: [docs/README.zh.md](docs/README.zh.md)
+- Japanese: [docs/README.ja.md](docs/README.ja.md)
+- Docs index: [docs/INDEX.md](docs/INDEX.md)
 
-Option 4 is to display all the details of the librbay, like the book id, title, author, year of publication and copies which are currently available.
+## Features
 
-Option 5 is to quit the whole system, when all the book information is updated and stored in the book file.
+- User registration and login
+- Librarian mode for adding/removing books
+- Borrow and return flow for standard users
+- Search books by title, author, and year
+- Backend management tools (users and loans)
+- Data persistence with plain text files (`books.txt`, `user.txt`, `loan.txt`)
 
+## Project Structure
 
-### Tests-and-submission-files
-The systme is tested uder windows and centOS(linux) virtual machine. The Functions can be used properly and a relevant amount of error siutuations are considered and dealt with. However, I found that due to the different ways of storing a .txt file, under linux OS, all the three files(book file user file, loan file) requires a "dos2unix" command to be restored in unix coding so that the fucntions can be presented properly. In my subbmited files, there is a folder called "linux_file" which contains three unix coding .txt files for showing the system under linux OS.
-During test period, I found that the up limit of a "year" value should be no more than the current year. In order to do so, I used the C libraray "time.h" to get the current system time and limit user input by this.
-Besieds, to make sure that the right data type is read in to the system, every "loan" functions have a check for the type if data which are fed to the system. If they are of the wrong type, the system will return with a meaningful error message.
+.
+|- main.c
+|- interface.c / interface.h
+|- user_management.c / user_management.h
+|- book_management.c / book_management.h
+|- management.c / management.h
+|- books.txt
+|- user.txt
+|- loan.txt
+|- Makefile
+|- docs/
+|- LICENSE
+|- CONTRIBUTING.md
+|- CODE_OF_CONDUCT.md
+|- SECURITY.md
+|- CHANGELOG.md
 
-### Reflection-and-review
-In this project, the major problem I encountered was how to use dynamic memory allocation for all aspects that require internal memory spaces. The other part, like how to read/write form a text file, manage user input and look up through linked lists all went relatively well. For testing, I encountered some problem when moving my system under a unix operating system but the problem was solved by re-saving text files as unix mode. A copy of those files is included in the submission, too.
+## Build
 
-The most challenging part is dynamic memory allocation and flexibility between operating systems. As a beginner, I am still not very familliar with dynamic memory allocation and the minor differences between different operating systems. I will practice more and learn from all my previous works to improve on these two points.
+This project has no third-party library dependency. You only need a C compiler.
 
-### Git with a Git Hub repository was used for verison control in this work, the URL of the remote repository and screenshots of gits commision is presented below 
-URL of git respository:https://github.com/frankwyf/programming-project.git
+```bash
+make
+```
 
-Git commision history Screenshot:
-Screenshot:https://raw.githubusercontent.com/frankwyf/programming-project/master/git%20screenshots/Screenshot.png 
-Screenshot0:https://raw.githubusercontent.com/frankwyf/programming-project/master/git%20screenshots/Screenshot0.png 
-Screenshot 1:https://raw.githubusercontent.com/frankwyf/programming-project/8285e99569e6907e45c3c9c5a201a2be42ff19fd/Screenshot1.png
-Screenshot 2:https://raw.githubusercontent.com/frankwyf/programming-project/8285e99569e6907e45c3c9c5a201a2be42ff19fd/Screenshot2.png 
-Screenshot 3:https://raw.githubusercontent.com/frankwyf/programming-project/8285e99569e6907e45c3c9c5a201a2be42ff19fd/Screenshot3.png 
-Screenshot 4:https://raw.githubusercontent.com/frankwyf/programming-project/8285e99569e6907e45c3c9c5a201a2be42ff19fd/Screenshot4.png 
+If `make` is not available, compile directly:
+
+```bash
+gcc -O2 -Wall -Wextra -std=c11 -o library main.c interface.c management.c book_management.c user_management.c
+```
+
+## Run
+
+```bash
+./library books.txt user.txt loan.txt
+```
+
+On Windows PowerShell:
+
+```powershell
+.\library.exe books.txt user.txt loan.txt
+```
+
+## Notes
+
+- `user.txt` uses demo-only credentials and anonymized identities.
+- This project intentionally preserves much of the original coursework logic while improving release hygiene for open-source sharing.
+- See [docs/project-legacy-notes.md](docs/project-legacy-notes.md) for the migration summary from local legacy materials.
+
+## Open Source Governance
+
+- License: [LICENSE](LICENSE)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Code of Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- Security Policy: [SECURITY.md](SECURITY.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## CI and Collaboration
+
+- Continuous Integration: [.github/workflows/ci.yml](.github/workflows/ci.yml)
+- Bug Report Template: [.github/ISSUE_TEMPLATE/bug_report.yml](.github/ISSUE_TEMPLATE/bug_report.yml)
+- Feature Request Template: [.github/ISSUE_TEMPLATE/feature_request.yml](.github/ISSUE_TEMPLATE/feature_request.yml)
+- Pull Request Template: [.github/pull_request_template.md](.github/pull_request_template.md)
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
