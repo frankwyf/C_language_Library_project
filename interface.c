@@ -40,7 +40,8 @@ char *user_input(const char *input) {
 	i=strlen(answer);
 	for (j=0;j<i;j++){
 		if (!isdigit(answer[j])){
-			answer=0;
+			answer[0] = '0';
+			answer[1] = '\0';
 			return answer;
 		}
 	}
