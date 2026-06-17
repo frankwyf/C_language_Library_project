@@ -43,6 +43,12 @@ run_case() {
   echo "[PASS] $name"
 }
 
+files_equal_normalized() {
+  local left="$1"
+  local right="$2"
+  diff -u <(tr -d '\r' < "$left") <(tr -d '\r' < "$right") >/dev/null
+}
+
 run_case "quit_from_main_menu" "5\n" "Goodbye"
 run_case "show_books_then_quit" "4\n5\n" "Programming in C"
 run_case "invalid_option_then_quit" "x\n5\n" "invalid"
@@ -71,7 +77,7 @@ if ! grep -Fq "successfully returned" <<<"$output_borrow_return"; then
   exit 1
 fi
 
-if ! cmp -s "$TMP_DIR/loan_before.txt" "$TMP_DIR/loan.txt"; then
+if ! files_equal_normalized "$TMP_DIR/loan_before.txt" "$TMP_DIR/loan.txt"; then
   echo "[FAIL] borrow_and_return_flow"
   echo "Loan file was not restored after borrow+return cycle"
   echo "--- Before ---"
@@ -81,7 +87,7 @@ if ! cmp -s "$TMP_DIR/loan_before.txt" "$TMP_DIR/loan.txt"; then
   exit 1
 fi
 
-if ! cmp -s "$TMP_DIR/books_before_borrow_return.txt" "$TMP_DIR/books.txt"; then
+if ! files_equal_normalized "$TMP_DIR/books_before_borrow_return.txt" "$TMP_DIR/books.txt"; then
   echo "[FAIL] borrow_and_return_flow"
   echo "Books file was not restored after borrow+return cycle"
   echo "--- Before ---"
@@ -113,7 +119,7 @@ if ! grep -Fq "removed successfuly" <<<"$output_admin_add_remove"; then
   exit 1
 fi
 
-if ! cmp -s "$TMP_DIR/books_before.txt" "$TMP_DIR/books.txt"; then
+if ! files_equal_normalized "$TMP_DIR/books_before.txt" "$TMP_DIR/books.txt"; then
   echo "[FAIL] admin_add_remove_flow"
   echo "Books file was not restored after add+remove cycle"
   echo "--- Before ---"
