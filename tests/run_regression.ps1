@@ -44,6 +44,41 @@ try {
     Run-Case -Name 'login_failure_then_quit' -InputText "2`nno_user`nbad_pass`n5`n" -ExpectedText 'invalid'
     Run-Case -Name 'librarian_login_then_quit' -InputText "2`nadmin`nadmin123`n5`n5`n" -ExpectedText 'Successfully logged in as Librarian'
 
+    Copy-Item (Join-Path $tmpDir 'loan.txt') (Join-Path $tmpDir 'loan_before.txt') -Force
+    $exe = if (Test-Path .\library.exe) { '.\library.exe' } else { '.\library' }
+    $args = @((Join-Path $tmpDir 'books.txt'), (Join-Path $tmpDir 'user.txt'), (Join-Path $tmpDir 'loan.txt'))
+    $borrowReturnOutput = "2`nalice`nalice123`n1`n1`n2`n1`n5`n5`n" | & $exe @args 2>&1 | Out-String
+
+    if ($borrowReturnOutput -notmatch 'successfuly borrowed') {
+        Write-Host '[FAIL] borrow_and_return_flow'
+        Write-Host 'Expected borrow success message'
+        Write-Host '--- Output ---'
+        Write-Host $borrowReturnOutput
+        exit 1
+    }
+
+    if ($borrowReturnOutput -notmatch 'successfully returned') {
+        Write-Host '[FAIL] borrow_and_return_flow'
+        Write-Host 'Expected return success message'
+        Write-Host '--- Output ---'
+        Write-Host $borrowReturnOutput
+        exit 1
+    }
+
+    $beforeLoan = Get-Content (Join-Path $tmpDir 'loan_before.txt') -Raw
+    $afterLoan = Get-Content (Join-Path $tmpDir 'loan.txt') -Raw
+    if ($beforeLoan -ne $afterLoan) {
+        Write-Host '[FAIL] borrow_and_return_flow'
+        Write-Host 'Loan file was not restored after borrow+return cycle'
+        Write-Host '--- Before ---'
+        Write-Host $beforeLoan
+        Write-Host '--- After ---'
+        Write-Host $afterLoan
+        exit 1
+    }
+
+    Write-Host '[PASS] borrow_and_return_flow'
+
     Write-Host 'All regression tests passed.'
 }
 finally {
