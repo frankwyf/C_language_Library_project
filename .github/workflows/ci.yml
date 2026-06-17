@@ -68,11 +68,10 @@ jobs:
           mingw32-make clean
           mingw32-make
 
-      - name: Run regression (PowerShell)
+      - name: Run regression (MSYS2 bash)
         shell: pwsh
         run: |
-          $env:Path = "C:\\msys64\\mingw64\\bin;" + $env:Path
-          powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File tests\run_regression.ps1 | Tee-Object -FilePath regression-windows.log
+          & "C:\msys64\usr\bin\bash.exe" -lc 'set -o pipefail; bash tests/run_regression.sh 2>&1 | tee regression-windows.log'
 
       - name: Upload Windows regression log
         if: always()

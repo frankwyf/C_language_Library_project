@@ -4,8 +4,17 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
-if [[ ! -x ./library ]]; then
+if [[ ! -x ./library && ! -x ./library.exe ]]; then
   make
+fi
+
+if [[ -x ./library ]]; then
+  EXE=./library
+elif [[ -x ./library.exe ]]; then
+  EXE=./library.exe
+else
+  echo "[FAIL] executable not found"
+  exit 1
 fi
 
 TMP_DIR="$(mktemp -d)"
@@ -21,7 +30,7 @@ run_case() {
   local expected_text="$3"
 
   local output
-  output="$(printf "%b" "$input_text" | ./library "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
+  output="$(printf "%b" "$input_text" | "$EXE" "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
 
   if ! grep -Fq "$expected_text" <<<"$output"; then
     echo "[FAIL] $name"
@@ -44,7 +53,7 @@ run_case "register_then_login" "1\nCaseUser\nregcase\nregpass\n2\nregcase\nregpa
 # Data consistency case: borrow a book then return it and verify data rollback.
 cp "$TMP_DIR/loan.txt" "$TMP_DIR/loan_before.txt"
 cp "$TMP_DIR/books.txt" "$TMP_DIR/books_before_borrow_return.txt"
-output_borrow_return="$(printf "%b" "2\nalice\nalice123\n1\n1\n2\n1\n5\n5\n" | ./library "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
+output_borrow_return="$(printf "%b" "2\nalice\nalice123\n1\n1\n2\n1\n5\n5\n" | "$EXE" "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
 
 if ! grep -Fq "successfuly borrowed" <<<"$output_borrow_return"; then
   echo "[FAIL] borrow_and_return_flow"
@@ -86,7 +95,7 @@ echo "[PASS] borrow_and_return_flow"
 
 # Data consistency case: librarian add then remove should restore books file.
 cp "$TMP_DIR/books.txt" "$TMP_DIR/books_before.txt"
-output_admin_add_remove="$(printf "%b" "2\nadmin\nadmin123\n1\nRegression Title\nRegression Author\n2020\n1\n2\n14\n5\n5\n" | ./library "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
+output_admin_add_remove="$(printf "%b" "2\nadmin\nadmin123\n1\nRegression Title\nRegression Author\n2020\n1\n2\n14\n5\n5\n" | "$EXE" "$TMP_DIR/books.txt" "$TMP_DIR/user.txt" "$TMP_DIR/loan.txt" 2>&1 || true)"
 
 if ! grep -Fq "successfuly added" <<<"$output_admin_add_remove"; then
   echo "[FAIL] admin_add_remove_flow"
