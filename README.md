@@ -89,7 +89,7 @@ powershell -ExecutionPolicy Bypass -File tests\run_regression.ps1
 	- build with make
 	- direct gcc build
 	- smoke test
-	- regression test script
+	- regression test script (menu, login, librarian path, borrow/return persistence)
 
 - Release workflow: [.github/workflows/release.yml](.github/workflows/release.yml)
 	- triggers on tags like `v1.0.0`
