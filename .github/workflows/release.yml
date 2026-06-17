@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,9 +31,66 @@ jobs:
           cp README.md LICENSE CHANGELOG.md dist/
           tar -czf dist/library-linux-x86_64.tar.gz -C dist library-linux-x86_64 README.md LICENSE CHANGELOG.md
 
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: dist/
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2 MinGW
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: MINGW64
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-make
+
+      - name: Build and regression test
+        shell: pwsh
+        run: |
+          $env:Path = "C:\\msys64\\mingw64\\bin;" + $env:Path
+          mingw32-make clean
+          mingw32-make
+          powershell -ExecutionPolicy Bypass -File tests\run_regression.ps1
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          Copy-Item .\library.exe .\dist\library-windows-x86_64.exe -Force
+          Copy-Item README.md,LICENSE,CHANGELOG.md .\dist\ -Force
+          Compress-Archive -Path .\dist\library-windows-x86_64.exe, .\dist\README.md, .\dist\LICENSE, .\dist\CHANGELOG.md -DestinationPath .\dist\library-windows-x86_64.zip -Force
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: dist/
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build-linux, build-windows]
+    steps:
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-linux
+          path: dist/
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-windows
+          path: dist/
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/library-linux-x86_64
             dist/library-linux-x86_64.tar.gz
+            dist/library-windows-x86_64.exe
+            dist/library-windows-x86_64.zip
