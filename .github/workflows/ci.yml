@@ -64,12 +64,14 @@ jobs:
       - name: Build (Windows MinGW)
         shell: msys2 {0}
         run: |
+          cd "$(cygpath "$GITHUB_WORKSPACE")"
           mingw32-make clean
           mingw32-make
 
       - name: Run regression (MSYS2 bash)
         shell: msys2 {0}
         run: |
+          cd "$(cygpath "$GITHUB_WORKSPACE")"
           set -o pipefail
           bash tests/run_regression.sh 2>&1 | tee regression-windows.log
 
