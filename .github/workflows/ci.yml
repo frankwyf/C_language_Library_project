@@ -62,16 +62,16 @@ jobs:
             mingw-w64-x86_64-make
 
       - name: Build (Windows MinGW)
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          $env:Path = "C:\\msys64\\mingw64\\bin;" + $env:Path
           mingw32-make clean
           mingw32-make
 
       - name: Run regression (MSYS2 bash)
-        shell: pwsh
+        shell: msys2 {0}
         run: |
-          & "C:\msys64\usr\bin\bash.exe" -lc 'set -o pipefail; bash tests/run_regression.sh 2>&1 | tee regression-windows.log'
+          set -o pipefail
+          bash tests/run_regression.sh 2>&1 | tee regression-windows.log
 
       - name: Upload Windows regression log
         if: always()
