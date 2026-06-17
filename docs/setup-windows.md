@@ -63,3 +63,8 @@ If still blocked, your machine is enforcing enterprise policy. In that case:
 
 1. Run from an allowed terminal profile or trusted folder.
 2. Ask local policy admin to allow your workspace path for local development binaries.
+
+Current project note:
+
+- Build works in this workspace with MinGW (`C:\\mingw64\\bin`).
+- If runtime is blocked in VS Code terminal by policy, CI regression in GitHub Actions remains the reliable verification path until local policy is relaxed.
