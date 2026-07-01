@@ -32,7 +32,7 @@ jobs:
           tar -czf dist/library-linux-x86_64.tar.gz -C dist library-linux-x86_64 README.md LICENSE CHANGELOG.md
 
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-linux
           path: dist/
@@ -65,7 +65,7 @@ jobs:
           Compress-Archive -Path .\dist\library-windows-x86_64.exe, .\dist\README.md, .\dist\LICENSE, .\dist\CHANGELOG.md -DestinationPath .\dist\library-windows-x86_64.zip -Force
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-windows
           path: dist/
